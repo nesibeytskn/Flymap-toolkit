@@ -7,9 +7,17 @@ export const getFlightData = createAsyncThunk(
   "flights/getFlights",
   async () => {
     const res = await axios.request(options);
-    console.log(res);
+
+    const newData = res.data.aircraft.map((plane) => ({
+      id: plane[0],
+      code: plane[1],
+      lat: plane[2],
+      lng: plane[3],
+    }));
+    return newData;
   }
 );
+
 const initialState = {
   flights: [],
   flightsLoading: true,
@@ -19,5 +27,17 @@ const initialState = {
 export const flightSlice = createSlice({
   name: "flightSlice",
   initialState,
-  extraReducers: {},
+  extraReducers: {
+    [getFlightData.pending]: (state, action) => {
+      state.flightsLoading = true;
+    },
+    [getFlightData.fulfilled]: (state, action) => {
+      state.flights = action.payload;
+      state.flightsLoading = false;
+    },
+    [getFlightData.rejected]: (state, action) => {
+      state.isError = true;
+      state.flightsLoading = false;
+    },
+  },
 });
