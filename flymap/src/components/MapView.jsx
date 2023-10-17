@@ -5,17 +5,26 @@ import "leaflet/dist/leaflet.css";
 import { useSelector } from "react-redux";
 import Leaflet from "leaflet";
 import icon from "../assets/planemarker.png";
+import { useState } from "react";
+import SideDetails from "./SideDetails";
 
 const MapView = () => {
   const state = useSelector((store) => store.reducer);
+  const [showDetail, setShowDetail] = useState(false);
+  const [detailId, setDetailId] = useState(null);
   const planeIcon = Leaflet.icon({
     iconUrl: icon,
     iconSize: [45, 45],
   });
+  const handleClick = (id) => {
+    setDetailId(id);
+    setShowDetail(true);
+  };
   console.log(state);
   return (
     <div>
-      <h3>Harita</h3>
+      <h3>{state.flights.length} Uçak Bulundu</h3>
+      <p>Harita</p>
       <MapContainer
         center={[39.1417632, 34.1284977]}
         zoom={7}
@@ -29,11 +38,17 @@ const MapView = () => {
         {state.flights.map((flight) => (
           <Marker icon={planeIcon} position={[flight.lat, flight.lng]}>
             <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
+              <div className="popup">
+                <span>Kod:{flight.code}</span>
+                <button onClick={() => handleClick(flight.id)}>Detay</button>
+              </div>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
+      {showDetail && (
+        <SideDetails detailId={detailId} setShowDetail={setShowDetail} />
+      )}
     </div>
   );
 };
