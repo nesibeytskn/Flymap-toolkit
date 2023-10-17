@@ -39,7 +39,9 @@ const ListView = () => {
           ))}
         </tbody>
       </table>
-      {showDetail && <SideDetails detailId={detailId} />}
+      {showDetail && (
+        <SideDetails detailId={detailId} setShowDetail={setShowDetail} />
+      )}
     </div>
   );
 };
